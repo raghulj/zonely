@@ -28,17 +28,34 @@ How it works, in short: the first zone in the list is the reference. The scrubbe
 
 ## 1. Install
 
-Download `Zonely.app` from [Releases](../../releases), unzip, and drag it into `/Applications`.
+```sh
+brew install --cask raghulj/tap/zonely
+```
 
-The build is ad-hoc signed and not notarised, so the first launch needs one of:
+That is the path I would take: the cask puts the app in `/Applications` and clears the quarantine flag for you, so it opens on the first try.
+
+Zonely has no Dock icon and no window. After launching, look for it in the menu bar. **Launch at login** registers through `SMAppService`, which wants the app in a stable location — `/Applications` is where the cask puts it.
+
+To update:
+
+```sh
+brew upgrade --cask zonely
+```
+
+<details>
+<summary>Downloading the app instead</summary>
+
+Grab `Zonely.app` from [Releases](../../releases), unzip, and drag it into `/Applications`.
+
+The build is ad-hoc signed rather than notarised, so Gatekeeper will refuse the first launch. Either right-click the app → **Open** → **Open**, or clear the flag the way the cask does:
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Zonely.app
 ```
 
-or right-click the app → **Open** → **Open**. **Launch at login** registers through `SMAppService`, which wants the app in a stable location, so install it before turning that on.
+Signing properly needs an Apple Developer account, which I have not set up.
 
-Zonely has no Dock icon and no window. After launching, look for it in the menu bar.
+</details>
 
 ## 2. The panel
 
