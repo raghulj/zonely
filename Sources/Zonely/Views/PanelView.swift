@@ -6,8 +6,13 @@ struct PanelView: View {
     enum Mode { case zones, settings }
     @State private var mode: Mode
 
-    init(initialMode: Mode = .zones) {
+    init(initialMode: Mode = .zones, addQuery: String? = nil, convertText: String? = nil, dateOpen: Bool = false) {
         _mode = State(initialValue: initialMode)
+        _addOpen = State(initialValue: addQuery != nil)
+        _query = State(initialValue: addQuery ?? "")
+        _convertOpen = State(initialValue: convertText != nil)
+        _convertText = State(initialValue: convertText ?? "")
+        _dateOpen = State(initialValue: dateOpen)
     }
 
     @State private var dateOpen = false

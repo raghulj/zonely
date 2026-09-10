@@ -33,7 +33,7 @@ struct SettingsPage: View {
                     picker("Appearance", selection: $store.prefs.appearance) { $0.label }
                     picker("Material", selection: $store.prefs.material) { $0.label }
 
-                    VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 8) {
                         label("Theme")
                         HStack(spacing: 8) {
                             Picker("", selection: $store.prefs.themePackID) {
@@ -65,14 +65,15 @@ struct SettingsPage: View {
                         }
                     }
 
-                    VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
                         label("Accent")
                         accentSwatches
+                        Spacer(minLength: 0)
                     }
 
                     picker("Time format", selection: $store.prefs.timeFormat) { $0.label }
 
-                    VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 8) {
                         label("Scrub range")
                         Picker("", selection: $store.prefs.scrubRangeHours) {
                             ForEach([6, 12, 18, 24], id: \.self) { hours in
@@ -86,10 +87,10 @@ struct SettingsPage: View {
                     picker("Menu bar shows", selection: $store.prefs.menuBarLabelStyle) { $0.label }
 
                     toggle("Launch at login", $store.prefs.launchAtLogin)
-                    toggle("Rotate menu bar zones", $store.prefs.rotateMenuBarZones)
+                    toggle("Rotate zones", $store.prefs.rotateMenuBarZones)
 
-                    VStack(alignment: .leading, spacing: 6) {
-                        label("Hold each zone for")
+                    HStack(spacing: 8) {
+                        label("Rotate every")
                         Picker("", selection: $store.prefs.menuBarRotationSeconds) {
                             ForEach([3, 5, 10, 30], id: \.self) { seconds in
                                 Text("\(seconds)s").tag(seconds)
@@ -100,7 +101,7 @@ struct SettingsPage: View {
                         .disabled(!store.prefs.rotateMenuBarZones)
                     }
                     .opacity(store.prefs.rotateMenuBarZones ? 1 : 0.45)
-                    toggle("Show icon in menu bar", $store.prefs.showMenuBarIcon)
+                    toggle("Show icon", $store.prefs.showMenuBarIcon)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 14)
@@ -120,10 +121,13 @@ struct SettingsPage: View {
         .tint(theme.accentColor)
     }
 
+    private static let labelWidth: CGFloat = 130
+
     private func label(_ text: String) -> some View {
         Text(text)
             .font(.zText(12))
             .foregroundStyle(theme.fg2Color)
+            .frame(width: Self.labelWidth, alignment: .leading)
     }
 
     private func picker<T: Hashable & CaseIterable & Identifiable>(
@@ -131,7 +135,7 @@ struct SettingsPage: View {
         selection: Binding<T>,
         title labelFor: @escaping (T) -> String
     ) -> some View where T.AllCases: RandomAccessCollection {
-        VStack(alignment: .leading, spacing: 6) {
+        HStack(spacing: 8) {
             label(title)
             Picker("", selection: selection) {
                 ForEach(Array(T.allCases)) { option in
@@ -144,18 +148,19 @@ struct SettingsPage: View {
     }
 
     private func toggle(_ title: String, _ binding: Binding<Bool>) -> some View {
-        Toggle(isOn: binding) {
-            Text(title)
-                .font(.zText(12))
-                .foregroundStyle(theme.fg2Color)
+        HStack(spacing: 8) {
+            label(title)
+            Toggle("", isOn: binding)
+                .labelsHidden()
+                .toggleStyle(.switch)
+                .controlSize(.small)
+            Spacer()
         }
-        .toggleStyle(.switch)
-        .controlSize(.small)
     }
 
     private var accentSwatches: some View {
         let choices = AccentChoice.all
-        return HStack(spacing: 8) {
+        return HStack(spacing: 6) {
             swatch(
                 fill: AnyShapeStyle(Color(hex: ThemeRegistry.shared.pack(id: store.prefs.themePackID)
                     .theme(dark: theme.isDark, glass: false).accent)),

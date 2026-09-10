@@ -144,6 +144,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func runParseTest() {
+        store.isEphemeral = true
         let cases = ["8pm PDT", "12:43 NZDT", "3pm New York", "15:30", "9:45 am london",
                      "8pm utc+5:30", "7:15pm IST", "3pm friday", "tomorrow 9am NYC",
                      "dec 3 9:00 IST", "3 dec 09:00", "2026-12-25 18:00 london",
@@ -180,6 +181,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Frames come from ImageRenderer rather than a screen capture, so the demo
     /// can be regenerated on any machine without recording permission.
     private func renderGIF(to path: String) {
+        store.isEphemeral = true
         let theme = store.resolvedTheme
         var offsets: [Int] = []
         offsets.append(contentsOf: Array(repeating: 0, count: 6))          // hold on "NOW"
@@ -223,6 +225,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func snapshot(to path: String) {
+        store.isEphemeral = true
         let env = ProcessInfo.processInfo.environment
         if let appearance = env["ZONELY_SNAPSHOT_APPEARANCE"],
            let mode = AppearanceMode(rawValue: appearance) {
@@ -235,19 +238,76 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let pack = env["ZONELY_SNAPSHOT_THEME"] {
             store.prefs.themePackID = pack
         }
-        let page: PanelView.Mode = env["ZONELY_SNAPSHOT_PAGE"] == "settings" ? .settings : .zones
+        if let scrub = env["ZONELY_SNAPSHOT_SCRUB"], let minutes = Int(scrub) {
+            store.scrubMinutes = minutes
+        }
+
+        let page = env["ZONELY_SNAPSHOT_PAGE"] ?? "zones"
+        let panel: PanelView
+        switch page {
+        case "settings": panel = PanelView(initialMode: .settings)
+        case "add": panel = PanelView(addQuery: env["ZONELY_SNAPSHOT_QUERY"] ?? "tok")
+        case "convert": panel = PanelView(convertText: env["ZONELY_SNAPSHOT_QUERY"] ?? "3pm friday PDT")
+        case "date": panel = PanelView(dateOpen: true)
+        default: panel = PanelView()
+        }
+
         let chrome = PanelChrome(arrowX: 190, theme: store.resolvedTheme) {
-            PanelView(initialMode: page).environmentObject(store)
+            panel.environmentObject(store)
         }
-        let renderer = ImageRenderer(content: chrome.padding(12))
-        renderer.scale = 2
-        if let image = renderer.nsImage,
-           let tiff = image.tiffRepresentation,
-           let rep = NSBitmapImageRep(data: tiff),
-           let png = rep.representation(using: .png, properties: [:]) {
-            try? png.write(to: URL(fileURLWithPath: path))
+        // ImageRenderer cannot draw AppKit-backed controls (segmented pickers,
+        // switches) or ScrollView content, so the settings page came out as
+        // yellow blocks. Drawing through a real window captures what actually
+        // ships.
+        captureThroughWindow(chrome.padding(10), to: path)
+    }
+
+    /// Hosts the view in an offscreen-ish window and captures its backing store,
+    /// so every control renders exactly as AppKit draws it.
+    private func captureThroughWindow<V: View>(_ view: V, to path: String) {
+        let hosting = NSHostingView(rootView: view)
+        hosting.frame = NSRect(origin: .zero, size: hosting.fittingSize)
+
+        let window = NSWindow(
+            contentRect: hosting.frame,
+            styleMask: [.borderless],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentView = hosting
+        window.backgroundColor = .clear
+        window.isOpaque = false
+        window.hasShadow = false
+        window.appearance = store.resolvedTheme.appearance
+        window.level = .normal
+        // Somewhere on the main screen, so the window picks up a 2x backing
+        // scale. Off at -20000 it would render at 1x.
+        if let screen = NSScreen.main {
+            window.setFrameOrigin(NSPoint(x: screen.frame.minX + 40, y: screen.frame.minY + 40))
         }
-        NSApp.terminate(nil)
+        // Controls draw in their inactive, untinted style unless the app itself is
+        // frontmost, and an .accessory app cannot come forward. Promote it for the
+        // duration of the capture so switches and segments show their real accent.
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+        hosting.layoutSubtreeIfNeeded()
+
+        // SwiftUI needs a run loop pass to lay out and draw before the backing
+        // store holds anything.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+            guard let rep = hosting.bitmapImageRepForCachingDisplay(in: hosting.bounds) else {
+                NSApp.terminate(nil)
+                return
+            }
+            hosting.cacheDisplay(in: hosting.bounds, to: rep)
+            if let png = rep.representation(using: .png, properties: [:]) {
+                try? png.write(to: URL(fileURLWithPath: path))
+                print("wrote \(path) — \(rep.pixelsWide)x\(rep.pixelsHigh)")
+            }
+            window.orderOut(nil)
+            NSApp.terminate(nil)
+        }
     }
 
     @objc private func copyAll() { store.copyAll() }

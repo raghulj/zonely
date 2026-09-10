@@ -61,5 +61,10 @@ struct PanelChrome<Content: View>: View {
             .overlay {
                 shape.stroke(theme.panelBorderColor, lineWidth: 1)
             }
+            // AppKit-backed controls — the graphical date picker, segmented
+            // pickers, switches — follow the system appearance, not our tokens.
+            // Without this a dark theme on a light Mac draws a white calendar
+            // inside a dark panel.
+            .environment(\.colorScheme, theme.isDark ? .dark : .light)
     }
 }

@@ -17,6 +17,10 @@ final class AppStore: ObservableObject {
 
     let step = 15
 
+    /// Set by the render modes. They mutate prefs to compose a shot and must not
+    /// write that back over the user's real settings.
+    var isEphemeral = false
+
     private var clock: Timer?
     private var rotator: Timer?
     private var notificationTokens: [NSObjectProtocol] = []
@@ -304,6 +308,7 @@ final class AppStore: ObservableObject {
     }
 
     private func persist() {
+        guard !isEphemeral else { return }
         guard let data = try? JSONEncoder().encode(Stored(zones: zones, prefs: prefs)) else { return }
         UserDefaults.standard.set(data, forKey: defaultsKey)
     }

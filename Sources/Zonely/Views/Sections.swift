@@ -134,6 +134,7 @@ struct ConvertSection: View {
         .onAppear {
             baseScrub = store.scrubMinutes
             focused = true
+            if !text.isEmpty { apply(text) }
         }
     }
 
