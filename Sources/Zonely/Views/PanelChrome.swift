@@ -10,28 +10,43 @@ struct PanelChromeShape: Shape {
     var arrowHeight: CGFloat = 9
 
     func path(in rect: CGRect) -> Path {
-        var path = Path()
         let body = CGRect(
             x: rect.minX, y: rect.minY + arrowHeight,
             width: rect.width, height: rect.height - arrowHeight
         )
-        path.addRoundedRect(in: body, cornerSize: CGSize(width: radius, height: radius), style: .continuous)
+        let r = min(radius, min(body.width, body.height) / 2)
 
         // Keep the arrow clear of the rounded corners.
-        let limit = radius + arrowWidth / 2 + 2
+        let limit = r + arrowWidth / 2 + 2
         let x = min(max(arrowX, body.minX + limit), body.maxX - limit)
         let tipInset: CGFloat = 3
 
-        var arrow = Path()
-        arrow.move(to: CGPoint(x: x - arrowWidth / 2, y: body.minY + 1))
-        arrow.addLine(to: CGPoint(x: x - tipInset, y: rect.minY + tipInset * 0.8))
-        arrow.addQuadCurve(
+        // One continuous outline. Drawing the body and the arrow as two
+        // subpaths fills correctly but strokes both, which puts a border line
+        // straight across the base of the arrow.
+        var path = Path()
+        path.move(to: CGPoint(x: body.minX + r, y: body.minY))
+        path.addLine(to: CGPoint(x: x - arrowWidth / 2, y: body.minY))
+        path.addLine(to: CGPoint(x: x - tipInset, y: rect.minY + tipInset * 0.8))
+        path.addQuadCurve(
             to: CGPoint(x: x + tipInset, y: rect.minY + tipInset * 0.8),
             control: CGPoint(x: x, y: rect.minY)
         )
-        arrow.addLine(to: CGPoint(x: x + arrowWidth / 2, y: body.minY + 1))
-        arrow.closeSubpath()
-        path.addPath(arrow)
+        path.addLine(to: CGPoint(x: x + arrowWidth / 2, y: body.minY))
+
+        path.addLine(to: CGPoint(x: body.maxX - r, y: body.minY))
+        path.addArc(tangent1End: CGPoint(x: body.maxX, y: body.minY),
+                    tangent2End: CGPoint(x: body.maxX, y: body.minY + r), radius: r)
+        path.addLine(to: CGPoint(x: body.maxX, y: body.maxY - r))
+        path.addArc(tangent1End: CGPoint(x: body.maxX, y: body.maxY),
+                    tangent2End: CGPoint(x: body.maxX - r, y: body.maxY), radius: r)
+        path.addLine(to: CGPoint(x: body.minX + r, y: body.maxY))
+        path.addArc(tangent1End: CGPoint(x: body.minX, y: body.maxY),
+                    tangent2End: CGPoint(x: body.minX, y: body.maxY - r), radius: r)
+        path.addLine(to: CGPoint(x: body.minX, y: body.minY + r))
+        path.addArc(tangent1End: CGPoint(x: body.minX, y: body.minY),
+                    tangent2End: CGPoint(x: body.minX + r, y: body.minY), radius: r)
+        path.closeSubpath()
         return path
     }
 }
