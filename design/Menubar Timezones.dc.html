@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<style>
+  body { margin: 0; background: #06080b; }
+  a { color: #00c874; text-decoration: none; }
+  a:hover { color: #33d58f; }
+</style>
+</helmet>
+<div style="{{ themeVars }}">
+  <div style="position: relative; min-height: 700px; width: 100%; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; background-color: var(--bg, #0a0d12); background-image: radial-gradient(rgba(138,145,156,0.16) 1px, transparent 1px); background-size: 24px 24px; overflow: hidden; padding-bottom: 40px;">
+
+    <div style="display: flex; align-items: center; gap: 18px; height: 30px; padding: 0 14px; background: var(--menubar, rgba(20,24,32,0.82)); backdrop-filter: blur(12px); border-bottom: 1px solid var(--bd, #232932);">
+      <div style="width: 11px; height: 11px; border-radius: 999px; border: 1.25px solid var(--fg2, #b8bdc5); display: flex; align-items: center; justify-content: center;">
+        <div style="width: 3px; height: 3px; border-radius: 999px; background: #00c874;"></div>
+      </div>
+      <div style="display: flex; gap: 16px; font-size: 13px; color: var(--fg2, #b8bdc5);">
+        <span style="font-weight: 600;">Finder</span>
+        <span>File</span>
+        <span>Edit</span>
+        <span>View</span>
+        <span>Window</span>
+        <span>Help</span>
+      </div>
+      <div style="flex: 1;"></div>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 7px; padding: 3px 9px; border-radius: 6px; background: var(--sel, rgba(0,200,116,0.14)); border: 1px solid rgba(0,200,116,0.35); cursor: default;">
+          <sc-if value="{{ tickerIsDay }}" hint-placeholder-val="{{ true }}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#e5a83d" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="4.25"></circle><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"></path></svg>
+          </sc-if>
+          <sc-if value="{{ tickerIsNight }}" hint-placeholder-val="{{ false }}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8a91b4" stroke-width="1.5" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"></path></svg>
+          </sc-if>
+          <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 12px; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; color: var(--fg1, #f7f8fa);">{{ tickerLabel }}</span>
+          <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#00c874" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5L6 8l3.5-3.5"></path></svg>
+        </div>
+        <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 12px; color: var(--fg3, #8a919c);">100%</span>
+        <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--fg2, #b8bdc5);">{{ systemClock }}</span>
+      </div>
+    </div>
+
+    <div style="position: absolute; top: 38px; right: 96px; width: 380px; border-radius: var(--panelr, 14px); background: var(--surfpop, #141820); border: 0.5px solid var(--panelbd, rgba(255,255,255,0.16)); box-shadow: var(--shadow, 0 16px 44px rgba(0,0,0,0.55));">
+      <div style="position: absolute; top: -6px; right: 142px; width: 12px; height: 12px; transform: rotate(45deg); background: var(--surf, #141820); border-left: 0.5px solid var(--panelbd, rgba(255,255,255,0.16)); border-top: 0.5px solid var(--panelbd, rgba(255,255,255,0.16)); border-radius: 2px;"></div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 10px;">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg3, #8a919c);">Reference · {{ homeCode }}</span>
+          <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; color: var(--fg1, #f7f8fa);">{{ refTime }}</span>
+        </div>
+        <div style="position: relative; display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+          <button onClick="{{ toggleDatePicker }}" style="{{ dateBtnStyle }}" style-hover="border-color: var(--fg3, #8a919c);">
+            <span style="white-space: nowrap;">{{ refDate }}</span>
+            <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5L6 8l3.5-3.5"></path></svg>
+          </button>
+          <sc-if value="{{ datePickerOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; top: 26px; right: 0; z-index: 5; width: 248px; padding: 12px; border-radius: 10px; background: var(--surfpop, #141820); border: 0.5px solid var(--panelbd, rgba(255,255,255,0.16)); box-shadow: var(--shadow, 0 16px 44px rgba(0,0,0,0.55)); display: flex; flex-direction: column; gap: 10px; text-align: left;">
+              <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg3, #8a919c);">Set reference</span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <button onClick="{{ prevMonth }}" style="{{ stepBtnStyle }}" style-hover="border-color: var(--fg3, #8a919c);">‹</button>
+                <span style="flex: 1; text-align: center; font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 12px; letter-spacing: 0.06em; color: var(--fg1, #f7f8fa);">{{ calTitle }}</span>
+                <button onClick="{{ nextMonth }}" style="{{ stepBtnStyle }}" style-hover="border-color: var(--fg3, #8a919c);">›</button>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;">
+                <sc-for list="{{ weekdays }}" as="w" hint-placeholder-count="7">
+                  <span style="text-align: center; font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 9px; letter-spacing: 0.06em; color: var(--fg3, #8a919c);">{{ w.label }}</span>
+                </sc-for>
+                <sc-for list="{{ calCells }}" as="c" hint-placeholder-count="35">
+                  <button onClick="{{ c.onPick }}" style="{{ c.cellStyle }}" style-hover="border-color: var(--fg3, #8a919c);">{{ c.label }}</button>
+                </sc-for>
+              </div>
+              <input type="time" value="{{ refTimeValue }}" onChange="{{ onTimeInput }}" style="width: 100%; box-sizing: border-box; padding: 7px 9px; border-radius: 6px; border: 1px solid var(--bd, #232932); background: var(--surf2, #1c222c); font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 13px; color: var(--fg1, #f7f8fa); outline: none;">
+              <div style="display: flex; gap: 6px;">
+                <button onClick="{{ snapNextHour }}" style="{{ chipStyle }}" style-hover="border-color: var(--fg3, #8a919c);">Next hour</button>
+                <button onClick="{{ snapTomorrow9 }}" style="{{ chipStyle }}" style-hover="border-color: var(--fg3, #8a919c);">Tomorrow 09:00</button>
+              </div>
+              <button onClick="{{ resetScrub }}" style="{{ resetBtnStyle }}" style-hover="opacity: 0.85;">Back to now</button>
+            </div>
+          </sc-if>
+          <button onClick="{{ resetScrub }}" style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 9px; border-radius: 6px; border: 1px solid var(--bd, #232932); background: var(--surf2, #1c222c); color: var(--accent, #00c874); cursor: pointer;" style-hover="border-color: rgba(0,200,116,0.5);">{{ scrubDelta }}</button>
+        </div>
+      </div>
+
+      <div style="padding: 0 14px 12px;">
+        <div onPointerDown="{{ trackDown }}" style="position: relative; height: 54px; background: transparent; overflow: hidden; cursor: ew-resize; touch-action: none; user-select: none;">
+          <div style="position: absolute; inset: 0; background: linear-gradient(90deg, var(--surf, #141820) 0%, rgba(0,0,0,0) 14%, rgba(0,0,0,0) 86%, var(--surf, #141820) 100%); z-index: 2; pointer-events: none;"></div>
+          <sc-for list="{{ ticks }}" as="t" hint-placeholder-count="9">
+            <div style="{{ t.tickStyle }}"></div>
+          </sc-for>
+          <sc-for list="{{ tickLabels }}" as="t" hint-placeholder-count="5">
+            <span style="{{ t.labelStyle }}">{{ t.label }}</span>
+          </sc-for>
+          <div style="position: absolute; top: 5px; bottom: 5px; left: 50%; width: 1.5px; margin-left: -0.75px; background: var(--accent, #00c874); z-index: 3; box-shadow: 0 0 8px rgba(0,200,116,0.55);"></div>
+          <div style="position: absolute; top: 2px; left: 50%; margin-left: -4px; width: 8px; height: 8px; border-radius: 999px; background: var(--accent, #00c874); z-index: 3;"></div>
+        </div>
+      </div>
+
+      <div style="padding: 4px 0;">
+        <sc-for list="{{ rows }}" as="row" hint-placeholder-count="5">
+          <div onDragOver="{{ row.onDragOver }}" onDragEnd="{{ row.onDragEnd }}" style="position: relative; overflow: hidden;">
+            <button onClick="{{ row.onRemove }}" style="{{ row.deleteStyle }}">Delete</button>
+            <div onPointerDown="{{ row.onSwipeDown }}" style="{{ row.rowStyle }}" style-hover="background: var(--surf2, #1c222c);">
+            <div draggable="true" onDragStart="{{ row.onDragStart }}" style="display: flex; flex-direction: column; gap: 3px; width: 8px; flex: none; opacity: 0.45; cursor: grab;">
+              <div style="display: flex; gap: 3px;"><div style="width: 2px; height: 2px; border-radius: 999px; background: var(--fg3, #8a919c);"></div><div style="width: 2px; height: 2px; border-radius: 999px; background: var(--fg3, #8a919c);"></div></div>
+              <div style="display: flex; gap: 3px;"><div style="width: 2px; height: 2px; border-radius: 999px; background: var(--fg3, #8a919c);"></div><div style="width: 2px; height: 2px; border-radius: 999px; background: var(--fg3, #8a919c);"></div></div>
+              <div style="display: flex; gap: 3px;"><div style="width: 2px; height: 2px; border-radius: 999px; background: var(--fg3, #8a919c);"></div><div style="width: 2px; height: 2px; border-radius: 999px; background: var(--fg3, #8a919c);"></div></div>
+            </div>
+
+            <div style="flex: 1.4; min-width: 0; display: flex; flex-direction: column; gap: 3px;">
+              <div style="display: flex; align-items: center; gap: 7px;">
+                <span style="font-size: 14px; font-weight: 500; color: var(--fg1, #f7f8fa); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ row.city }}</span>
+                <sc-if value="{{ row.isHome }}" hint-placeholder-val="{{ false }}">
+                  <span style="{{ row.homeBadgeStyle }}">HOME</span>
+                </sc-if>
+              </div>
+              <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--fg3, #8a919c);">{{ row.meta }}</span>
+            </div>
+
+            <div style="width: 58px; flex: none; display: flex; flex-direction: column; gap: 4px; align-items: center;">
+              <div style="position: relative; width: 100%; height: 5px; border-radius: 999px; background: linear-gradient(to right, #1a2030 0%, #1a2030 25%, #e5a83d 30%, #e5a83d 70%, #1a2030 75%, #1a2030 100%); opacity: 0.75;">
+                <div style="{{ row.markerStyle }}"></div>
+              </div>
+              <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 9px; letter-spacing: 0.12em; color: var(--fg3, #8a919c);">{{ row.phase }}</span>
+            </div>
+
+            <div onClick="{{ row.onTimeClick }}" onDoubleClick="{{ row.onTimeCopy }}" title="Click for AM/PM · double-click to copy" style="width: 88px; flex: none; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 2px 4px; border-radius: 6px; cursor: pointer; user-select: none;" style-hover="background: var(--surf2, #1c222c);">
+              <span style="{{ row.timeStyle }}">{{ row.time }}</span>
+              <span style="{{ row.dayStyle }}">{{ row.dayLabel }}</span>
+            </div>
+
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      
+
+      <div style="position: relative;">
+        <sc-if value="{{ addOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 10px 14px;">
+            <div style="display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; background: var(--surf2, #1c222c); border: 1px solid var(--bd, #232932);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--fg3, #8a919c); flex: none;"><circle cx="11" cy="11" r="7"></circle><path d="M16 16l5 5"></path></svg>
+              <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Add a zone — city or UTC offset" style="flex: 1; min-width: 0; border: none; outline: none; background: transparent; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; font-size: 13px; color: var(--fg1, #f7f8fa);">
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ convertOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 10px 14px; display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; background: var(--surf2, #1c222c); border: 1px solid var(--accent, #00c874);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent, #00c874); flex: none;"><path d="M4 8h13l-3-3M20 16H7l3 3"></path></svg>
+              <input value="{{ convertText }}" onChange="{{ onConvert }}" placeholder="Convert a time — 3pm, 15:30, 9:45 am" style="flex: 1; min-width: 0; border: none; outline: none; background: transparent; font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 13px; color: var(--fg1, #f7f8fa);">
+            </div>
+            <span style="{{ convertHintStyle }}">{{ convertHint }}</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ false }}">
+          <div style="position: absolute; left: 14px; right: 14px; bottom: 46px; border-radius: 10px; background: var(--surfpop, #141820); border: 0.5px solid var(--panelbd, rgba(255,255,255,0.16)); box-shadow: var(--shadow, 0 16px 44px rgba(0,0,0,0.55)); overflow: hidden; z-index: 3;">
+            <sc-for list="{{ results }}" as="r" hint-placeholder-count="3">
+              <div onClick="{{ r.onAdd }}" style="display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; cursor: pointer;" style-hover="background: var(--surf2, #1c222c);">
+                <span style="font-size: 13px; color: var(--fg1, #f7f8fa);">{{ r.city }}</span>
+                <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--fg3, #8a919c);">{{ r.meta }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+
+      
+
+      <div style="display: flex; align-items: center; gap: 8px; padding: 9px 12px;">
+        <div style="flex: 1;"></div>
+        <button onClick="{{ toggleAdd }}" title="Add a zone" style="{{ addBtnStyle }}" style-hover="color: var(--fg1, #f7f8fa); border-color: var(--bd, #232932);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        </button>
+        <button onClick="{{ toggleConvert }}" title="Convert a time" style="{{ convertBtnStyle }}" style-hover="color: var(--fg1, #f7f8fa); border-color: var(--bd, #232932);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"></path></svg>
+        </button>
+        <div style="position: relative;">
+          <button onClick="{{ toggleSettings }}" style="{{ settingsBtnStyle }}" style-hover="color: var(--fg1, #f7f8fa); border-color: var(--bd, #232932);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h13M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="19" cy="18" r="2"></circle></svg>
+          </button>
+          <sc-if value="{{ settingsOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; right: 0; bottom: 34px; z-index: 6; width: 216px; padding: 12px; border-radius: 10px; background: var(--surfpop, #141820); border: 0.5px solid var(--panelbd, rgba(255,255,255,0.16)); box-shadow: var(--shadow, 0 16px 44px rgba(0,0,0,0.55)); display: flex; flex-direction: column; gap: 10px;">
+              <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg3, #8a919c);">Settings</span>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <span style="font-size: 12px; color: var(--fg2, #b8bdc5);">Appearance</span>
+                <div style="display: flex; padding: 2px; border-radius: 999px; background: var(--surf2, #1c222c); border: 1px solid var(--bd, #232932);">
+                  <button onClick="{{ setDark }}" style="{{ darkPillStyle }}">Dark</button>
+                  <button onClick="{{ setSystem }}" style="{{ systemPillStyle }}">System</button>
+                  <button onClick="{{ setLight }}" style="{{ lightPillStyle }}">Light</button>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <span style="font-size: 12px; color: var(--fg2, #b8bdc5);">Material</span>
+                <div style="display: flex; padding: 2px; border-radius: 999px; background: var(--surf2, #1c222c); border: 1px solid var(--bd, #232932);">
+                  <button onClick="{{ setSolid }}" style="{{ solidPillStyle }}">Solid</button>
+                  <button onClick="{{ setGlass }}" style="{{ glassPillStyle }}">Liquid glass</button>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <span style="font-size: 12px; color: var(--fg2, #b8bdc5);">Accent</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 7px 8px; padding: 2px 0;">
+                  <sc-for list="{{ accents }}" as="a" hint-placeholder-count="4">
+                    <button onClick="{{ a.onPick }}" title="{{ a.name }}" style="{{ a.swatchStyle }}"></button>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <span style="font-size: 12px; color: var(--fg2, #b8bdc5);">Time format</span>
+                <div style="display: flex; padding: 2px; border-radius: 999px; background: var(--surf2, #1c222c); border: 1px solid var(--bd, #232932);">
+                  <button onClick="{{ set24h }}" style="{{ h24PillStyle }}">24h</button>
+                  <button onClick="{{ set12h }}" style="{{ h12PillStyle }}">12h</button>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                <span style="font-size: 12px; color: var(--fg2, #b8bdc5);">Launch at login</span>
+                <button onClick="{{ toggleLaunch }}" style="{{ launchTrackStyle }}"><span style="{{ launchKnobStyle }}"></span></button>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                <span style="font-size: 12px; color: var(--fg2, #b8bdc5);">Rotate menu bar zones</span>
+                <button onClick="{{ toggleRotate }}" style="{{ rotateTrackStyle }}"><span style="{{ rotateKnobStyle }}"></span></button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+
+    <div style="position: absolute; left: 40px; bottom: 40px; max-width: 340px; display: flex; flex-direction: column; gap: 10px;">
+      <span style="font-family: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg3, #8a919c);">Prototype notes</span>
+      <p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--fg2, #b8bdc5); text-wrap: pretty;">Drag the slider to move every clock together, then read across for a slot that works. Drag a row to reorder. The menu bar item cycles through your zones.</p>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1120,&quot;height&quot;:700},&quot;appearance&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;,&quot;system&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;'dark' | 'light' | 'system'&quot;},&quot;material&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;solid&quot;,&quot;glass&quot;],&quot;default&quot;:&quot;solid&quot;,&quot;tsType&quot;:&quot;'solid' | 'glass'&quot;},&quot;timeFormat&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;24h&quot;,&quot;12h&quot;],&quot;default&quot;:&quot;24h&quot;,&quot;tsType&quot;:&quot;'24h' | '12h'&quot;},&quot;scrubRangeHours&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:12,&quot;min&quot;:6,&quot;max&quot;:24,&quot;step&quot;:6,&quot;unit&quot;:&quot;h&quot;,&quot;tsType&quot;:&quot;number&quot;}}">
+const CATALOG = [
+  { city: 'New York', code: 'NYC', tz: 'EDT', off: -4 },
+  { city: 'San Francisco', code: 'SFO', tz: 'PDT', off: -7 },
+  { city: 'Chicago', code: 'CHI', tz: 'CDT', off: -5 },
+  { city: 'São Paulo', code: 'SAO', tz: 'BRT', off: -3 },
+  { city: 'London', code: 'LON', tz: 'BST', off: 1 },
+  { city: 'Berlin', code: 'BER', tz: 'CEST', off: 2 },
+  { city: 'Lagos', code: 'LOS', tz: 'WAT', off: 1 },
+  { city: 'Dubai', code: 'DXB', tz: 'GST', off: 4 },
+  { city: 'Bangalore', code: 'BLR', tz: 'IST', off: 5.5 },
+  { city: 'Singapore', code: 'SIN', tz: 'SGT', off: 8 },
+  { city: 'Shanghai', code: 'SHA', tz: 'CST', off: 8 },
+  { city: 'Tokyo', code: 'TYO', tz: 'JST', off: 9 },
+  { city: 'Sydney', code: 'SYD', tz: 'AEST', off: 10 },
+  { city: 'Auckland', code: 'AKL', tz: 'NZST', off: 12 }
+];
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const THEMES = {
+  dark: {
+    '--bg': '#0a0d12', '--menubar': 'rgba(20,24,32,0.82)', '--surf': '#141820', '--surf2': '#1c222c',
+    '--track': '#232932', '--bd': '#232932', '--fg1': '#f7f8fa', '--fg2': '#b8bdc5', '--fg3': '#8a919c',
+    '--sel': 'rgba(0,200,116,0.14)', '--accent': '#00c874',
+    '--panelbd': 'rgba(255,255,255,0.16)', '--surfpop': '#141820',
+    '--shadow': '0 0 0 1px rgba(255,255,255,0.06), 0 0 18px rgba(190,200,215,0.10), 0 16px 44px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.10)'
+  },
+  light: {
+    '--bg': '#eef0f3', '--menubar': 'rgba(255,255,255,0.82)', '--surf': '#ffffff', '--surf2': '#f7f8fa',
+    '--track': '#dde0e4', '--bd': '#dde0e4', '--fg1': '#0a0d12', '--fg2': '#3a424f', '--fg3': '#5d6673',
+    '--sel': 'rgba(0,168,98,0.12)', '--accent': '#00a862',
+    '--panelbd': 'rgba(0,0,0,0.12)', '--surfpop': '#ffffff',
+    '--shadow': '0 16px 40px rgba(10,13,18,0.16)'
+  }
+};
+
+class Component extends DCLogic {
+  state = {
+    zones: ['New York', 'Bangalore', 'Singapore', 'Tokyo', 'Sydney'].map(c => CATALOG.find(z => z.city === c)),
+    scrub: 0, now: Date.now(), tick: 0, query: '', drag: null, copied: false, theme: null,
+    ampm: {}, rowCopied: null
+  };
+
+  componentDidMount() {
+    try {
+      const probe = document.createElement('span');
+      probe.style.color = 'AccentColor';
+      document.body.appendChild(probe);
+      const c = getComputedStyle(probe).color;
+      probe.remove();
+      if (c && c !== 'rgba(0, 0, 0, 0)' && c !== 'rgb(0, 0, 0)') this.systemAccent = c;
+    } catch (e) {}
+    this.clock = setInterval(() => this.setState({ now: Date.now() }), 15000);
+    this.rot = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 2600);
+  }
+  componentWillUnmount() {
+    clearInterval(this.clock); clearInterval(this.rot);
+    window.removeEventListener('pointermove', this.onMove);
+    window.removeEventListener('pointerup', this.onUp);
+  }
+
+  theme() {
+    const t = this.state.theme || this.props.appearance || 'dark';
+    if (t !== 'system') return t;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+  accent() {
+    const a = this.state.accent || 'auto';
+    if (a !== 'auto') return a;
+    return this.systemAccent || '#00c874';
+  }
+  range() { return (this.props.scrubRangeHours ?? 12) * 60; }
+  twelve() { return (this.state.fmt || this.props.timeFormat) === '12h'; }
+
+  parts(off) {
+    const ms = this.state.now + this.state.scrub * 60000 + off * 3600000;
+    const d = new Date(ms);
+    return { h: d.getUTCHours(), m: d.getUTCMinutes(), day: d.getUTCDay(), date: d.getUTCDate(), mon: d.getUTCMonth(), yr: d.getUTCFullYear() };
+  }
+  hhmm(p) {
+    const pad = n => String(n).padStart(2, '0');
+    if (!this.twelve()) return pad(p.h) + ':' + pad(p.m);
+    const h = p.h % 12 === 0 ? 12 : p.h % 12;
+    return h + ':' + pad(p.m) + (p.h < 12 ? ' am' : ' pm');
+  }
+
+  onMove = e => {
+    const r = this.trackRect; if (!r) return;
+    const minsPerPx = (this.range() * 2) / r.width;
+    const raw = this.dragStartScrub - (e.clientX - this.dragStartX) * minsPerPx;
+    this.setState({ scrub: Math.round(raw / 15) * 15, copied: false });
+  };
+  onUp = () => {
+    window.removeEventListener('pointermove', this.onMove);
+    window.removeEventListener('pointerup', this.onUp);
+  };
+
+  renderVals() {
+    const th = this.theme();
+    const glass = (this.state.material || this.props.material || 'solid') === 'glass';
+    const GLASS = glass ? (th === 'dark' ? {
+      '--surf': 'rgba(28,32,40,0.62)', '--surf2': 'rgba(255,255,255,0.10)', '--track': 'rgba(255,255,255,0.14)',
+      '--panelbd': 'rgba(255,255,255,0.22)', '--surfpop': 'rgba(38,42,50,0.97)', '--panelr': '20px', '--blur': 'blur(28px) saturate(180%)',
+      '--shadow': '0 0 0 1px rgba(255,255,255,0.08), 0 8px 24px rgba(0,0,0,0.42), 0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(255,255,255,0.06)'
+    } : {
+      '--surf': 'rgba(255,255,255,0.58)', '--surf2': 'rgba(255,255,255,0.62)', '--track': 'rgba(10,13,18,0.12)',
+      '--panelbd': 'rgba(255,255,255,0.7)', '--surfpop': 'rgba(252,252,253,0.97)', '--panelr': '20px', '--blur': 'blur(28px) saturate(180%)',
+      '--shadow': '0 0 0 1px rgba(10,13,18,0.06), 0 8px 24px rgba(10,13,18,0.12), 0 24px 60px rgba(10,13,18,0.18), inset 0 1px 0 rgba(255,255,255,0.9)'
+    }) : {};
+    const T = Object.assign({}, THEMES[th], GLASS, { '--accent': this.accent() });
+    const mode = this.state.theme || this.props.appearance || 'dark';
+    const ACCENTS = [
+      { name: 'Follow system accent', c: 'auto' },
+      { name: 'Signal green', c: '#00c874' }, { name: 'Blue', c: '#0a84ff' },
+      { name: 'Purple', c: '#a259e0' }, { name: 'Pink', c: '#f2679b' },
+      { name: 'Red', c: '#eb5545' }, { name: 'Orange', c: '#f0873c' },
+      { name: 'Yellow', c: '#e5c02e' }, { name: 'Graphite', c: '#8a919c' }
+    ];
+    const range = this.range();
+    const zones = this.state.zones;
+    const home = zones[0] || CATALOG[0];
+    const hp = this.parts(home.off);
+    const homeDate = new Date(this.state.now + this.state.scrub * 60000 + home.off * 3600000);
+
+    const sc = this.state.scrub;
+    const abs = Math.abs(sc);
+    const deltaLabel = sc === 0 ? 'NOW' : (sc > 0 ? '+' : '−') + Math.floor(abs / 60) + 'h ' + String(abs % 60).padStart(2, '0') + 'm';
+
+    const rows = zones.map((z, i) => {
+      const p = this.parts(z.off);
+      const dayDiff = Math.round((new Date(Date.UTC(p.mon > hp.mon ? 2001 : 2000, p.mon, p.date)) - new Date(Date.UTC(2000, hp.mon, hp.date))) / 86400000);
+      const dayTag = DAYS[p.day] + ' ' + p.date + ' ' + MONTHS[p.mon] + (dayDiff === 0 ? '' : (dayDiff > 0 ? ' +1' : ' −1'));
+      const mins = p.h * 60 + p.m;
+      const isDay = p.h >= 7 && p.h < 19;
+      const showAmPm = !!this.state.ampm[z.city];
+      const h12 = p.h % 12 === 0 ? 12 : p.h % 12;
+      const ampmTime = h12 + ':' + String(p.m).padStart(2, '0') + ' ' + (p.h < 12 ? 'AM' : 'PM');
+      const justCopied = this.state.rowCopied === z.city;
+      const swipeX = this.state.swipe && this.state.swipe.i === i ? this.state.swipe.x : 0;
+      return {
+        id: z.city,
+        city: z.city,
+        timeStyle: {
+          fontFamily: "ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace", fontSize: showAmPm ? '15px' : '17px',
+          fontWeight: 500, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap',
+          color: justCopied ? T['--accent'] : T['--fg1']
+        },
+        onTimeClick: () => {
+          clearTimeout(this.clickT);
+          this.clickT = setTimeout(() => {
+            this.setState(s => ({ ampm: Object.assign({}, s.ampm, { [z.city]: !s.ampm[z.city] }) }));
+          }, 220);
+        },
+        onTimeCopy: () => {
+          clearTimeout(this.clickT);
+          const text = z.city + ' ' + ampmTime + ' ' + dayTag + ' (' + z.tz + ')';
+          if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+          this.setState({ rowCopied: z.city });
+          clearTimeout(this.rowCopyT);
+          this.rowCopyT = setTimeout(() => this.setState({ rowCopied: null }), 1400);
+        },
+        meta: z.tz + ' · UTC' + (z.off >= 0 ? '+' : '−') + (Number.isInteger(z.off) ? Math.abs(z.off) : Math.abs(z.off).toFixed(1)),
+        time: justCopied ? 'COPIED' : (showAmPm ? ampmTime : this.hhmm(p)),
+        dayLabel: dayTag,
+        dayStyle: {
+          fontFamily: "ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace", fontSize: '10px', letterSpacing: '0.06em',
+          fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap',
+          color: new Date(this.state.now + z.off * 3600000).getUTCDate() === p.date ? T['--fg3'] : T['--accent']
+        },
+        dayTint: dayDiff === 0 ? T['--fg3'] : T['--accent'],
+        phase: isDay ? 'DAY' : 'NIGHT',
+        markerStyle: {
+          position: 'absolute', top: '-2px', left: 'calc(' + (mins / 1440) * 100 + '% - 4.5px)',
+          width: '9px', height: '9px', borderRadius: '999px',
+          background: isDay ? '#e5a83d' : T['--fg2'], border: '1.25px solid ' + T['--surf']
+        },
+        rowStyle: {
+          display: 'flex', alignItems: 'center', gap: '12px', padding: '9px 12px',
+          opacity: this.state.drag === i ? 0.4 : 1, position: 'relative',
+          background: swipeX ? T['--surf'] : 'transparent',
+          transform: 'translateX(' + (-swipeX) + 'px)',
+          transition: this.state.swipeLive === i ? 'none' : 'transform 200ms cubic-bezier(0.2,0.8,0.2,1)',
+          touchAction: 'pan-y'
+        },
+        deleteStyle: {
+          position: 'absolute', top: '4px', right: '8px', bottom: '4px', width: '76px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px',
+          border: 'none', background: '#eb5545', color: '#ffffff', cursor: 'pointer',
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif",
+          fontSize: '12px', fontWeight: 500, opacity: swipeX > 4 ? 1 : 0,
+          pointerEvents: swipeX > 40 ? 'auto' : 'none'
+        },
+        onSwipeDown: e => {
+          if (e.target.closest('button')) return;
+          const startX = e.clientX;
+          const base = this.state.swipe && this.state.swipe.i === i ? this.state.swipe.x : 0;
+          let moved = 0;
+          const move = ev => {
+            moved = base + (startX - ev.clientX);
+            this.setState({ swipe: { i, x: Math.max(0, Math.min(90, moved)) }, swipeLive: i });
+          };
+          const up = () => {
+            window.removeEventListener('pointermove', move);
+            window.removeEventListener('pointerup', up);
+            const open = moved > 45;
+            this.setState({ swipe: open ? { i, x: 88 } : null, swipeLive: null });
+          };
+          window.addEventListener('pointermove', move);
+          window.addEventListener('pointerup', up);
+        },
+        isHome: i === 0,
+        homeBadgeStyle: {
+          fontFamily: "ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace", fontSize: '9px', letterSpacing: '0.12em',
+          padding: '1px 5px', borderRadius: '4px', flex: 'none',
+          background: th === 'dark' ? 'rgba(0,200,116,0.16)' : 'rgba(0,168,98,0.12)', color: T['--accent']
+        },
+        onRemove: () => this.setState(s => ({ zones: s.zones.filter((_, k) => k !== i), swipe: null })),
+        onDragStart: () => this.setState({ drag: i }),
+        onDragOver: e => {
+          e.preventDefault();
+          const from = this.state.drag;
+          if (from === null || from === i) return;
+          const next = zones.slice();
+          next.splice(i, 0, next.splice(from, 1)[0]);
+          this.setState({ zones: next, drag: i });
+        },
+        onDragEnd: () => this.setState({ drag: null })
+      };
+    });
+
+    const q = this.state.query.trim().toLowerCase();
+    const results = q
+      ? CATALOG.filter(z => !zones.some(x => x.city === z.city) && (z.city.toLowerCase().includes(q) || z.code.toLowerCase().includes(q) || z.tz.toLowerCase().includes(q) || ('utc' + z.off).includes(q))).slice(0, 4).map(z => ({
+          city: z.city,
+          meta: z.tz + ' · UTC' + (z.off >= 0 ? '+' : '−') + Math.abs(z.off),
+          onAdd: () => this.setState(s => ({ zones: s.zones.concat([z]), query: '' }))
+        }))
+      : [];
+
+    const pill = on => ({
+      flex: 1, padding: '3px 10px', borderRadius: '5px', cursor: 'pointer',
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif", fontSize: '12px', fontWeight: on ? 500 : 400,
+      border: on ? '0.5px solid ' + (th === 'dark' ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.12)') : '0.5px solid transparent',
+      background: on ? (th === 'dark' ? '#5b6068' : '#ffffff') : 'transparent',
+      boxShadow: on ? '0 1px 2px rgba(0,0,0,0.18)' : 'none',
+      color: on ? T['--fg1'] : T['--fg2']
+    });
+
+    const track = on => ({
+      width: '38px', height: '22px', flex: 'none', padding: '2px', borderRadius: '999px',
+      border: '0.5px solid ' + (on ? 'rgba(0,0,0,0.18)' : (th === 'dark' ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)')),
+      background: on ? T['--accent'] : (th === 'dark' ? '#3a3f47' : '#e3e5e8'), display: 'flex',
+      justifyContent: on ? 'flex-end' : 'flex-start', alignItems: 'center', cursor: 'pointer',
+      transition: 'background 120ms cubic-bezier(0.2,0.8,0.2,1)'
+    });
+    const knob = on => ({
+      width: '18px', height: '18px', borderRadius: '999px', background: '#ffffff', display: 'block',
+      boxShadow: '0 1px 2px rgba(0,0,0,0.28), 0 0 0 0.5px rgba(0,0,0,0.06)'
+    });
+
+    const span = range * 2;
+    const step = 15;
+    const first = Math.ceil((sc - span / 2) / step) * step;
+    const ticks = [];
+    const tickLabels = [];
+    for (let t = first; t <= sc + span / 2; t += step) {
+      const left = 50 + ((t - sc) / span) * 100;
+      if (left < -2 || left > 102) continue;
+      const isHour = ((t % 60) + 60) % 60 === 0;
+      const h = ((hp.h * 60 + hp.m - sc + t) % 1440 + 1440) % 1440;
+      const hh = Math.floor(h / 60);
+      const major = isHour && hh % 3 === 0;
+      const work = hh >= 9 && hh < 18;
+      ticks.push({
+        tickStyle: {
+          position: 'absolute', left: left + '%', width: major ? '1.5px' : '1px',
+          top: major ? '8px' : (isHour ? '12px' : '17px'), height: major ? '18px' : (isHour ? '11px' : '5px'),
+          background: work ? T['--fg2'] : T['--fg3'],
+          opacity: major ? 0.95 : (isHour ? 0.55 : 0.3)
+        }
+      });
+      if (major) tickLabels.push({
+        label: String(hh).padStart(2, '0') + ':00',
+        labelStyle: {
+          position: 'absolute', top: '30px', left: left + '%', transform: 'translateX(-50%)',
+          fontFamily: "ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace", fontSize: '10px', letterSpacing: '0.06em',
+          fontVariantNumeric: 'tabular-nums', color: T['--fg3'], whiteSpace: 'nowrap'
+        }
+      });
+    }
+
+    const view = this.state.calView || { y: hp.yr, m: hp.mon };
+    const calY = view.y, calM = view.m;
+    const firstDow = new Date(Date.UTC(calY, calM, 1)).getUTCDay();
+    const daysIn = new Date(Date.UTC(calY, calM + 1, 0)).getUTCDate();
+    const todayRef = new Date(this.state.now + home.off * 3600000);
+    const calCells = [];
+    for (let i = 0; i < firstDow; i++) calCells.push({ label: '', key: 'b' + i, cellStyle: { border: 'none', background: 'transparent', height: '24px' }, onPick: () => {} });
+    for (let d = 1; d <= daysIn; d++) {
+      const sel = d === hp.date && calM === hp.mon && calY === hp.yr;
+      const isToday = d === todayRef.getUTCDate() && calM === todayRef.getUTCMonth() && calY === todayRef.getUTCFullYear();
+      calCells.push({
+        key: d, label: String(d),
+        cellStyle: {
+          height: '24px', borderRadius: '999px', cursor: 'pointer',
+          border: '0.5px solid ' + (sel ? 'rgba(0,0,0,0.2)' : 'transparent'),
+          background: sel ? T['--accent'] : 'transparent',
+          color: sel ? '#ffffff' : (isToday ? T['--accent'] : T['--fg2']),
+          fontFamily: "ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace", fontSize: '11px',
+          fontWeight: isToday && !sel ? 700 : 400, fontVariantNumeric: 'tabular-nums', padding: 0
+        },
+        onPick: () => {
+          const diff = Math.round((Date.UTC(calY, calM, d) - Date.UTC(hp.yr, hp.mon, hp.date)) / 86400000);
+          this.setState(s => ({ scrub: s.scrub + diff * 1440 }));
+        }
+      });
+    }
+
+    const iconBtn = on => ({
+      flex: 'none', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      borderRadius: '6px', border: '1px solid ' + (on ? T['--bd'] : 'transparent'),
+      background: on ? T['--surf2'] : 'transparent', color: on ? T['--fg1'] : T['--fg3'], cursor: 'pointer'
+    });
+
+    const pct = Math.min(100, Math.max(0, 50 + (sc / range) * 50));
+    const ticker = zones.length ? zones[this.state.tick % zones.length] : home;
+    const tp = this.parts(ticker.off);
+
+    return {
+      themeVars: T,
+      rows, results, hasResults: results.length > 0,
+      query: this.state.query,
+      onQuery: e => this.setState({ query: e.target.value }),
+      homeCode: home.city,
+      refTime: this.hhmm(hp),
+      refDate: DAYS[hp.day] + ' ' + hp.date + ' ' + MONTHS[hp.mon],
+      scrubDelta: deltaLabel,
+      scrubTint: sc === 0 ? T['--fg3'] : T['--accent'],
+      resetScrub: () => this.setState({ scrub: 0, copied: false, datePicker: false }),
+      datePickerOpen: !!this.state.datePicker,
+      toggleDatePicker: () => this.setState(s => ({ datePicker: !s.datePicker })),
+      dateBtnStyle: {
+        display: 'flex', alignItems: 'center', gap: '5px', padding: '2px 7px', borderRadius: '5px',
+        border: '0.5px solid ' + (th === 'dark' ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.14)'),
+        background: this.state.datePicker ? T['--accent'] : (th === 'dark' ? '#5b6068' : '#ffffff'),
+        boxShadow: '0 1px 2px rgba(0,0,0,0.16)',
+        fontFamily: "ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace", fontSize: '12px', color: this.state.datePicker ? '#ffffff' : T['--fg1'], cursor: 'pointer'
+      },
+      stepBtnStyle: {
+        width: '24px', height: '22px', flex: 'none', borderRadius: '5px',
+        border: '0.5px solid ' + (th === 'dark' ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.14)'),
+        background: th === 'dark' ? '#5b6068' : '#ffffff', color: T['--fg1'],
+        boxShadow: '0 1px 2px rgba(0,0,0,0.16)', fontSize: '13px', lineHeight: 1, cursor: 'pointer'
+      },
+      chipStyle: {
+        flex: 1, padding: '4px 8px', borderRadius: '5px',
+        border: '0.5px solid ' + (th === 'dark' ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.14)'),
+        background: th === 'dark' ? '#5b6068' : '#ffffff',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.16)', fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif", fontSize: '12px',
+        color: T['--fg1'], cursor: 'pointer', whiteSpace: 'nowrap'
+      },
+      resetBtnStyle: {
+        padding: '5px 8px', borderRadius: '5px', border: '0.5px solid rgba(0,0,0,0.2)',
+        background: T['--accent'], boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif", fontSize: '12px', fontWeight: 500,
+        color: '#ffffff', cursor: 'pointer'
+      },
+      refTimeValue: String(hp.h).padStart(2, '0') + ':' + String(hp.m).padStart(2, '0'),
+      onTimeInput: e => {
+        const v = (e.target.value || '').split(':');
+        if (v.length < 2) return;
+        const want = Number(v[0]) * 60 + Number(v[1]);
+        const cur = hp.h * 60 + hp.m;
+        this.setState(s => ({ scrub: s.scrub + (want - cur), copied: false }));
+      },
+      calTitle: MONTHS[calM] + ' ' + calY,
+      prevMonth: () => this.setState({ calView: calM === 0 ? { y: calY - 1, m: 11 } : { y: calY, m: calM - 1 } }),
+      nextMonth: () => this.setState({ calView: calM === 11 ? { y: calY + 1, m: 0 } : { y: calY, m: calM + 1 } }),
+      weekdays: ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => ({ label: d, key: i })),
+      calCells,
+      snapNextHour: () => this.setState(s => ({ scrub: s.scrub + (60 - hp.m) })),
+      snapTomorrow9: () => this.setState(s => ({ scrub: s.scrub + 1440 + (9 * 60 - (hp.h * 60 + hp.m)) })),
+      rangeMinLabel: '−' + range / 60 + 'H',
+      rangeMaxLabel: '+' + range / 60 + 'H',
+      fillStyle: {
+        position: 'absolute', top: '11px', height: '4px', borderRadius: '999px', background: T['--accent'],
+        left: (sc >= 0 ? '50%' : pct + '%'), width: Math.abs(pct - 50) + '%'
+      },
+      handleStyle: {
+        position: 'absolute', top: '4px', left: 'calc(' + pct + '% - 9px)', width: '18px', height: '18px',
+        borderRadius: '999px', background: T['--surf'], border: '1.25px solid ' + T['--accent'],
+        boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
+      },
+      ticks, tickLabels,
+      trackDown: e => {
+        this.trackRect = e.currentTarget.getBoundingClientRect();
+        this.dragStartX = e.clientX;
+        this.dragStartScrub = sc;
+        window.addEventListener('pointermove', this.onMove);
+        window.addEventListener('pointerup', this.onUp);
+      },
+      copyLabel: this.state.copied ? 'Copied' : 'Copy times',
+      copyTimes: () => {
+        const text = zones.map(z => { const p = this.parts(z.off); return z.city + ' ' + this.hhmm(p) + ' ' + DAYS[p.day]; }).join('\n');
+        if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+        this.setState({ copied: true });
+        setTimeout(() => this.setState({ copied: false }), 1600);
+      },
+      addOpen: !!this.state.addOpen,
+      toggleAdd: () => this.setState(s => ({ addOpen: !s.addOpen, convertOpen: false, settings: false, query: '' })),
+      addBtnStyle: iconBtn(this.state.addOpen),
+      convertOpen: !!this.state.convertOpen,
+      toggleConvert: () => this.setState(s => ({ convertOpen: !s.convertOpen, addOpen: false, settings: false })),
+      convertBtnStyle: iconBtn(this.state.convertOpen),
+      convertText: this.state.convertText || '',
+      convertHint: this.state.convertErr ? "Try 3pm, 15:30 or 9:45 am" : 'Sets ' + home.city + ' time — every zone follows',
+      convertHintStyle: {
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif", fontSize: '11px',
+        color: this.state.convertErr ? '#eb6d6d' : T['--fg3']
+      },
+      onConvert: e => {
+        const v = e.target.value;
+        const m = v.trim().toLowerCase().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/);
+        if (!m) { this.setState({ convertText: v, convertErr: v.trim().length > 0 }); return; }
+        let h = Number(m[1]) % 24;
+        const mm = Number(m[2] || 0);
+        if (m[3] === 'pm' && h < 12) h += 12;
+        if (m[3] === 'am' && h === 12) h = 0;
+        const cur = hp.h * 60 + hp.m;
+        this.setState(s => ({ convertText: v, convertErr: false, scrub: s.scrub + (h * 60 + mm - cur) }));
+      },
+      settingsOpen: !!this.state.settings,
+      toggleSettings: () => this.setState(s => ({ settings: !s.settings })),
+      settingsBtnStyle: {
+        flex: 'none', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        borderRadius: '6px', border: '1px solid ' + (this.state.settings ? T['--bd'] : 'transparent'),
+        background: this.state.settings ? T['--surf2'] : 'transparent',
+        color: this.state.settings ? T['--fg1'] : T['--fg3'], cursor: 'pointer'
+      },
+      toggleLaunch: () => this.setState(s => ({ launch: !s.launch })),
+      launchTrackStyle: track(this.state.launch !== false),
+      launchKnobStyle: knob(this.state.launch !== false),
+      toggleRotate: () => this.setState(s => ({ rotate: s.rotate === false ? true : false })),
+      rotateTrackStyle: track(this.state.rotate !== false),
+      rotateKnobStyle: knob(this.state.rotate !== false),
+      setDark: () => this.setState({ theme: 'dark' }),
+      setLight: () => this.setState({ theme: 'light' }),
+      setSystem: () => this.setState({ theme: 'system' }),
+      darkPillStyle: pill(mode === 'dark'),
+      lightPillStyle: pill(mode === 'light'),
+      systemPillStyle: pill(mode === 'system'),
+      setSolid: () => this.setState({ material: 'solid' }),
+      setGlass: () => this.setState({ material: 'glass' }),
+      solidPillStyle: pill(!glass),
+      glassPillStyle: pill(glass),
+      set24h: () => this.setState({ fmt: '24h' }),
+      set12h: () => this.setState({ fmt: '12h' }),
+      h24PillStyle: pill(!this.twelve()),
+      h12PillStyle: pill(this.twelve()),
+      accents: ACCENTS.map(a => {
+        const on = (this.state.accent || 'auto') === a.c;
+        return {
+          name: a.name,
+          onPick: () => this.setState({ accent: a.c }),
+          swatchStyle: {
+            width: '18px', height: '18px', borderRadius: '999px', cursor: 'pointer', padding: 0, flex: 'none',
+            background: a.c === 'auto'
+              ? 'conic-gradient(#eb5545, #f0873c, #e5c02e, #00c874, #0a84ff, #a259e0, #eb5545)'
+              : a.c,
+            border: '0.5px solid rgba(0,0,0,0.16)',
+            boxShadow: on ? '0 0 0 2px ' + T['--surf'] + ', 0 0 0 3.5px ' + T['--fg2'] : 'none'
+          }
+        };
+      }),
+      tickerIsDay: tp.h >= 7 && tp.h < 19,
+      tickerIsNight: !(tp.h >= 7 && tp.h < 19),
+      tickerLabel: ticker.code + ' ' + this.hhmm(tp),
+      systemClock: DAYS[homeDate.getUTCDay()] + ' ' + homeDate.getUTCDate() + ' ' + MONTHS[homeDate.getUTCMonth()] + '  ' + this.hhmm(this.parts(home.off))
+    };
+  }
+}
+</script>
+</body>
+</html>
